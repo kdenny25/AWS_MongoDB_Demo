@@ -1,0 +1,6 @@
+sshtunnel
+pymongo
+
+boto3
+
+paramiko
