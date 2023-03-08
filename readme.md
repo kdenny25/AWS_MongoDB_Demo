@@ -76,7 +76,68 @@ from putty.org.
 
 ## Installing MongoDB
 
+Once logged into your EC2 instance through an SSH client you can start 
+following steps to install MongoDB. All steps in this section follow
+the tutorial by MongoDB, here: https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/
 
+The first step is importing the public key
+
+    wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+
+You should get a response with an OK.
+
+![img.png](static/readme_images/mongodb_install_public_key.png)
+
+Next create a list file for MongoDB. We are using Ubuntu 22.04 in this
+tutorial. If this has changed please follow the tutorial by MongoDB.
+
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+![img.png](static/readme_images/mongodb_install_create_list_file.png)
+
+Then reload the local pack database.
+
+    sudo apt-get update
+
+This will process a lot of GET responses. The end result should look
+similar to the following.
+
+![img.png](static/readme_images/mongodb_install_reload_local_package_db.png)
+
+Now you are ready to install MongoDB. To install the latest version use
+the following command. There is a method to install a specific release of
+MongoDB, please reference the MongoDB tutorial for more information.
+
+    sudo apt-get install -y mongodb-org
+
+Assuming everything went well we can now start MongoDB and check to see
+if everything is working as it should.
+
+To start enter the following command to start MongoDB.
+
+    sudo systemctl start mongod
+
+Then verify Mongodb has started.
+
+    sudo systemctl status mongod
+
+If everything is working well you should receive a response similar to
+the one below.
+
+![img.png](static/readme_images/mongodb_install_verify_start.png)
+
+You can stop and stop MongoDB using the following commands
+
+    sudo systemctl stop mongod
+    sudo systemctl restart mongod
+
+To start using MongoDB and issue commands directly to the database we will
+need to enter the MongoDB shell. Type in the following command to open the
+shell.
+
+    mongosh
+
+Once loaded you can begin adding and manipulating data within MongoDB.
 
 ## Adding Data to MongoDB from MongoDB Shell
 
@@ -205,10 +266,38 @@ Now that we have figured out how to import single and multiple entries
 let's import an entire CSV file to MongoDB. This method is great when you
 want to transition from a relational database to a NoSQL database.
 
-First we will want to use MY_DATABASE then create a new collection.
+First while we are still in the Mongo Shell you will want to 
+use MY_DATABASE then create a new collection.
 
     use MY_DATABASE
     db.createCollection("earth_quakes")
+
+Next, you will need to exit the Mongo Shell by simply entering in the Exit
+command.
+
+    exit()
+
+Then we will need to transfer the csv file from your personal computer
+to the remote EC2 instance. Do this by using the Secure Copy command to
+securely transfer the file or files to the destination computer. The
+command structure is below.
+
+    scp [switch] [source content location] [destination content location]
+
+Here is an explanation of the commands.
+
+- **scp** will activate the Secure Transfer command
+- **switch** is an optional parameter indicating whether to transfer one
+file or an entire folder. You can use **-r** to transfer an entire folder.
+other switch commands are available.
+- **content location** syntax will be different depending on whether the file
+is located o the server you are logged into or a second remote server.
+    - If content on logged in server:
+        * /var/www/dir
+    - If content on second remote server:
+        * [userid]@[remote server 2 url or ip]:[directory or file]
+
+
 
 Next we will use mongoimport to import our data from a CSV file into a 
 MongoDB database
